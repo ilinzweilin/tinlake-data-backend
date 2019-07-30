@@ -10,11 +10,14 @@ export const typeDefs = gql`
 
   type TinlakeEvent {
     timestamp: String
-    total_debt: Int
-    total_balance: Int
-    total_value_of_nfts: Int
-    total_supply: Int
-    number_of_loans: Int
+    total_debt: String
+    total_balance: String
+    total_value_of_nfts: String
+    total_supply: String
+    number_of_loans: String
+    whitelisted_loans: String
+    ongoing_loans: String
+    repaid_loans: String
   }
 `;
 
