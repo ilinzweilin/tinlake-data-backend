@@ -28,13 +28,11 @@ async function getTotalDebt(tinlake: Tinlake, allLoans) {
     const BalanceDebt = await tinlake.getBalanceDebt(LoanIDBN);
 
     if (BalanceDebt.debt > 0) {
-
       const cur_dept = await tinlake.getCurrentDebt(LoanIDBN);
-      debt.add(cur_dept);
+      debt = debt.add(cur_dept);
     }
 
   }
-
   return debt;
 
 }
@@ -45,7 +43,7 @@ async function getLoansCountbyStatus(tinlake: Tinlake, allLoans, status) {
     const loan = allLoans[loanID];
 
     if (loan.status == status) {
-      value.add(new BN(1));
+      value = value.add(new BN(1));
     }
 
   }
