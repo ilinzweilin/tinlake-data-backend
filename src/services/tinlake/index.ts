@@ -19,7 +19,7 @@ export async function getTinlake() {
   );
 }
 
-async function getTotalDept(tinlake: Tinlake, allLoans) {
+async function getTotalDebt(tinlake: Tinlake, allLoans) {
   let debt: BN = new BN(0);
 
   for (const loanID in allLoans) {
@@ -30,7 +30,6 @@ async function getTotalDept(tinlake: Tinlake, allLoans) {
     if (BalanceDebt.debt > 0) {
 
       const cur_dept = await tinlake.getCurrentDebt(LoanIDBN);
-      console.log(cur_dept.toString());
       debt.add(cur_dept);
     }
 
@@ -83,7 +82,7 @@ export async function getTinlakeData() {
   const loanCountBn: BN = await tinlake.loanCount();
 
   const allLoans = await getAllLoans(tinlake, loanCountBn.toNumber());
-  const TotalDebt = await getTotalDept(tinlake, allLoans);
+  const TotalDebt = await getTotalDebt(tinlake, allLoans);
 
   const TotalBalance = await tinlake.contracts.pile.Balance();
   const TotalValueofNFTs = await tinlake.contracts.shelf.bags();
