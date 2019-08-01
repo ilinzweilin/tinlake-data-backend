@@ -5,6 +5,10 @@ const SignerProvider = require('ethjs-provider-signer');
 import config from './../../config';
 import BN from 'BN.js';
 
+const NodeCache = require( "node-cache" );
+const LoanCache = new NodeCache();
+
+
 export async function getTinlake() {
   return new Tinlake(
     new SignerProvider(config['rpcUrl'], {
@@ -45,7 +49,6 @@ async function getLoansCountbyStatus(tinlake: Tinlake, allLoans, status) {
     if (loan.status == status) {
       value = value.add(new BN(1));
     }
-
   }
 
   return value;
@@ -55,16 +58,21 @@ async function getLoansCountbyStatus(tinlake: Tinlake, allLoans, status) {
 async function getAllLoans(tinlake, loansCount) {
   const loans = [];
   for (let loanId = 0; loanId < loansCount; loanId += 1) {
-    const loan = await tinlake.getLoan(loanId);
+
+    var loan = LoanCache.get(loanId);
+
+    if ( loan == undefined ){
+      loan = await tinlake.getLoan(loanId);
+    }
     let BalanceDebtRes = await tinlake.getBalanceDebt(loanId);
     const BalanceDebt = BalanceDebtRes.debt;
-
     if (loan.principal > 0) {
       loan['status'] = 'Whitelisted';
     } else if (loan.principal == 0 && BalanceDebt > 0){
       loan['status'] = 'Ongoing';
     } else if (loan.principal == 0 && BalanceDebt == 0) {
       loan['status'] = 'repaid';
+      LoanCache.set(loanId, loan);
     } else {
       loan['status'] = 'other';
     }
