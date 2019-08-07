@@ -1,4 +1,6 @@
 import Datastore from 'nedb';
+import { addDays, addHours, addMinutes, differenceInDays, differenceInHours, differenceInMinutes  } from 'date-fns';
+
 
 class EventAPI {
   datastore: Datastore;
@@ -6,13 +8,53 @@ class EventAPI {
   constructor(datastore: Datastore) {
     this.datastore = datastore;
   }
-  async createEvent(data:
-    { total_debt: string, total_balance: string, total_value_of_nfts: string,
-      total_supply: string, number_of_loans: string, whitelisted_loans: string,
-      ongoing_loans: string, repaid_loans: string }) {
+
+  getDateRange(startDate, endDate, interval) {
+    var dates_list = new Array();
+
+    if (interval == 'day') {
+      var days = differenceInDays(endDate, startDate);
+
+      for (let day = 1; day < days; day += 1) {
+        let new_date = addDays(startDate, day);
+        dates_list.push(new_date);
+      }
+
+    }
+
+    if (interval == 'hour') {
+      var hours = differenceInHours(endDate, startDate);
+
+
+      for (let hour = 1; hour < hours; hour += 1) {
+        let new_date = addHours(startDate, hour);
+
+        dates_list.push(new_date);
+      }
+
+    }
+
+    if (interval == 'minute') {
+      var minutes = differenceInMinutes(endDate, startDate);
+
+
+      for (let minute = 1; minute < minutes; minute += 1) {
+        let new_date = addMinutes(startDate, minute);
+
+        dates_list.push(new_date);
+      }
+
+    }
+
+    return dates_list;
+
+  }
+
+  async createEvent(date_created: Date, data:
+    { total_debt: string, total_balance: string, total_value_of_nfts: string, total_supply: string, number_of_loans: string, whitelisted_loans: string, ongoing_loans: string, repaid_loans: string }) {
     return new Promise((resolve, reject) => {
       const doc = {
-        timestamp: new Date(),
+        timestamp: date_created,
         total_debt: data['total_debt'],
         total_balance: data['total_balance'],
         total_value_of_nfts: data['total_value_of_nfts'],
@@ -28,7 +70,7 @@ class EventAPI {
       });
     });
   }
-  async findByPeriod(period: '24h' | '7d' | '30d' | '90d') {
+  async findByPeriod(period: '24h' | '7d' | '30d' | '90d', interval: 'day' | 'hour' | '') {
     return new Promise((resolve, reject) => {
       let days: number = 30;
       if (period === '24h') {
@@ -41,11 +83,33 @@ class EventAPI {
         days = 90;
       }
 
-      const today_date = new Date();
-      const end_date = today_date;
-      const start_date = new Date();
+      var today_date = new Date();
+
+      var end_date = today_date;
+      var start_date = new Date();
+
       start_date.setDate(today_date.getDate() - days);
 
+      start_date.setMinutes(0);
+      start_date.setMilliseconds(0);
+      start_date.setSeconds(0);
+
+      end_date.setHours(end_date.getHours()+1);
+      end_date.setMinutes(0);
+      end_date.setMilliseconds(0);
+      end_date.setSeconds(0);
+
+      if (interval == 'day' || interval == 'hour') {
+
+        var dates_list = this.getDateRange(start_date, end_date, interval);
+
+        return this.datastore.find(
+        { timestamp: { $in: dates_list} },
+        (err: Error, docs: any) => {
+          if (err) { reject(err); } else { resolve(docs); }
+        });
+
+      }
       return this.datastore.find(
         { timestamp: { $gte: start_date, $lte: end_date } },
         (err: Error, docs: any) => {
@@ -53,6 +117,7 @@ class EventAPI {
         });
     });
   }
+
 
 }
 
