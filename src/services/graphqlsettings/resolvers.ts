@@ -1,7 +1,5 @@
 import { IResolvers } from 'graphql-tools';
-import { eventAPI } from '../../config'
-
-
+import { eventAPI } from '../../config';
 
 const resolvers: IResolvers = {
   Query: {

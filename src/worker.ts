@@ -1,12 +1,13 @@
 import { getTinlakeData } from './services/tinlake';
-import { eventAPI } from './config';
-import config from './config';
+import config, { eventAPI } from './config';
 
- var CronJob = require('cron').CronJob;
+function createEvent() {
+  const data = getTinlakeData();
+  data.then(result => eventAPI.createEvent(result));
+  console.log(`${new Date()} New event saved to db`);
+}
 
- new CronJob('*/'+config['runEveryMinute']+' * * * *', function() {
-    const data = getTinlakeData();
-    data.then(result => eventAPI.createEvent(result));
-    console.log(new Date()+'New event saved to db');
+const CronJob = require('cron').CronJob;
+const rule = `*/${config['runEveryMinute']} * * * *`;
 
- }, null, true, 'UTC');
+new CronJob(rule, createEvent, null, true, 'UTC');

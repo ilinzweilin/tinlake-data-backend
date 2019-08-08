@@ -5,9 +5,8 @@ const SignerProvider = require('ethjs-provider-signer');
 import config from './../../config';
 import BN from 'BN.js';
 
-const NodeCache = require( "node-cache" );
+const NodeCache = require('node-cache');
 const LoanCache = new NodeCache();
-
 
 export async function getTinlake() {
   return new Tinlake(
@@ -46,7 +45,7 @@ async function getLoansCountbyStatus(tinlake: Tinlake, allLoans, status) {
   for (const loanID in allLoans) {
     const loan = allLoans[loanID];
 
-    if (loan.status == status) {
+    if (loan.status === status) {
       value = value.add(new BN(1));
     }
   }
@@ -59,18 +58,18 @@ async function getAllLoans(tinlake, loansCount) {
   const loans = [];
   for (let loanId = 0; loanId < loansCount; loanId += 1) {
 
-    var loan = LoanCache.get(loanId);
+    let loan = LoanCache.get(loanId);
 
-    if ( loan == undefined ){
+    if (loan === undefined) {
       loan = await tinlake.getLoan(loanId);
     }
-    let BalanceDebtRes = await tinlake.getBalanceDebt(loanId);
+    const BalanceDebtRes = await tinlake.getBalanceDebt(loanId);
     const BalanceDebt = BalanceDebtRes.debt;
     if (loan.principal > 0) {
       loan['status'] = 'Whitelisted';
-    } else if (loan.principal == 0 && BalanceDebt > 0){
+    } else if (loan.principal === 0 && BalanceDebt > 0) {
       loan['status'] = 'Ongoing';
-    } else if (loan.principal == 0 && BalanceDebt == 0) {
+    } else if (loan.principal === 0 && BalanceDebt === 0) {
       loan['status'] = 'repaid';
       LoanCache.set(loanId, loan);
     } else {
@@ -97,7 +96,7 @@ export async function getTinlakeData() {
   const TotalOngoing = await getLoansCountbyStatus(tinlake, allLoans, 'Ongoing');
   const TotalRepaid = await getLoansCountbyStatus(tinlake, allLoans, 'repaid');
 
-   const data = {
+  const data = {
     total_debt: TotalDebt.toString(),
     total_balance: TotalBalance[0].toString(),
     total_value_of_nfts: TotalValueofNFTs[0].toString(),
@@ -106,7 +105,7 @@ export async function getTinlakeData() {
     whitelisted_loans: TotalWhitelisted.toString(),
     ongoing_loans: TotalOngoing.toString(),
     repaid_loans: TotalRepaid.toString(),
-   };
+  };
 
-   return data;
+  return data;
 }
