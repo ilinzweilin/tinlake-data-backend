@@ -6,6 +6,7 @@
   "scripts": {
     "dev_server": "export NODE_ENV=development && ts-node src/server.ts",
     "dev_worker": "export NODE_ENV=development && ts-node src/worker.ts",
+    "create_test_events": "export NODE_ENV=development && ts-node src/create_test_events.ts",
     "test": "make test",
     "lint": "node_modules/.bin/tslint --project ."
   },

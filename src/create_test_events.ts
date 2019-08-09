@@ -12,7 +12,7 @@ function getDatesForEvent() {
   startDate.setMilliseconds(0);
   startDate.setSeconds(0);
 
-  endDate.setHours(end_date.getHours() + 1);
+  endDate.setHours(endDate.getHours() + 1);
   endDate.setMinutes(0);
   endDate.setMilliseconds(0);
   endDate.setSeconds(0);
