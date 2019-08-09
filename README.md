@@ -5,10 +5,16 @@ npm run-script dev_server
 ```
 
 
-# How to run worker
+# How to run worker, every one minute worker will same to database snapshot for tinlake data.
 
 ```
 npm run-script dev_worker
+```
+
+In order to have test events on local you can run following, this will save to db events from last 30 days.
+
+```
+npm run-script create_test_events
 ```
 
 # Query examples
