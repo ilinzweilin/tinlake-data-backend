@@ -1,53 +1,36 @@
-import { eventAPI } from './config';
+import config, { eventAPI } from './config';
 import { getTinlakeData } from './services/tinlake';
-import config from './config';
-
 
 function getDatesForEvent() {
-    const days_back = 30;
-    var today_date = new Date();
-    var end_date = today_date;
-    var start_date = new Date();
+  const days_back = 30;
+  const todayDate = new Date();
+  const endDate = todayDate;
+  const startDate = new Date();
 
-    start_date.setDate(today_date.getDate() - days_back);
-    start_date.setMinutes(0);
-    start_date.setMilliseconds(0);
-    start_date.setSeconds(0);
+  startDate.setDate(todayDate.getDate() - days_back);
+  startDate.setMinutes(0);
+  startDate.setMilliseconds(0);
+  startDate.setSeconds(0);
 
+  endDate.setHours(end_date.getHours() + 1);
+  endDate.setMinutes(0);
+  endDate.setMilliseconds(0);
+  endDate.setSeconds(0);
 
-    end_date.setHours(end_date.getHours()+1);
-    end_date.setMinutes(0);
-    end_date.setMilliseconds(0);
-    end_date.setSeconds(0);
-
-
-    try {
-        var dates_list = eventAPI.getDateRange(start_date, end_date, 'minute');
-    }
-    catch(err) {
-        console.log('Error: ', err.message);
-    }
-
-    return dates_list;
+  const datesList = eventAPI.getDateRange(startDate, endDate, 'minute');
+  return datesList;
 }
 
-
-
 function create_test_events(event) {
-    var dates_list = getDatesForEvent();
+  const datesList = getDatesForEvent();
 
-    for (const DateID in dates_list) {
-        const NewDate = dates_list[DateID];
-
-        eventAPI.createEvent(NewDate, event);
-    }
-
-
+  for (const DateID in datesList) {
+    const NewDate = datesList[DateID];
+    eventAPI.createEvent(NewDate, event);
+  }
 
 }
 
 const TinLakeEvent = getTinlakeData();
 
 TinLakeEvent.then(result => create_test_events(result));
-
-
