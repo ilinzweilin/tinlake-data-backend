@@ -8,7 +8,6 @@ import http from 'http';
 
 import config from './config';
 
-
 const configurations = {
   // Note: You may need sudo to run on port 443
   production: { ssl: true, port: 443, hostname: 'example.com' },
@@ -45,6 +44,7 @@ apollo.installSubscriptionHandlers(server);
 server.listen({ port: env_config.port }, () =>
   console.log(
     '🚀 Server ready at',
-    `http${env_config.ssl ? 's' : ''}://${env_config.hostname}:${env_config.port}${apollo.graphqlPath}`,
+    `http${env_config.ssl ? 's' : ''}://${env_config.hostname}\
+    :${env_config.port}${apollo.graphqlPath}`,
   ),
 );

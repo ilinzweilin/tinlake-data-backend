@@ -4,10 +4,12 @@ class EventAPI {
   datastore: Datastore;
 
   constructor(datastore: Datastore) {
-        this.datastore = datastore;
+    this.datastore = datastore;
   }
   async createEvent(data:
-    { total_debt: string, total_balance: string, total_value_of_nfts: string, total_supply: string, number_of_loans: string, whitelisted_loans: string, ongoing_loans: string, repaid_loans: string }) {
+    { total_debt: string, total_balance: string, total_value_of_nfts: string,
+      total_supply: string, number_of_loans: string, whitelisted_loans: string,
+      ongoing_loans: string, repaid_loans: string }) {
     return new Promise((resolve, reject) => {
       const doc = {
         timestamp: new Date(),
@@ -18,7 +20,7 @@ class EventAPI {
         number_of_loans: data['number_of_loans'],
         whitelisted_loans: data['whitelisted_loans'],
         ongoing_loans: data['ongoing_loans'],
-        repaid_loans: data['repaid_loans']
+        repaid_loans: data['repaid_loans'],
       };
 
       this.datastore.insert(doc, (err, newDoc) => {
