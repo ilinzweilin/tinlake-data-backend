@@ -4,7 +4,8 @@
   "description": "nodejs/typescript application that will query the Ethereum JSON RPC interface on a continuous basis to log time series data to a database and expose this data via a Rest",
   "main": "index.ts",
   "scripts": {
-    "dev": "NODE_ENV=development ts-node server.ts",
+    "dev_server": "export NODE_ENV=development && ts-node src/server.ts",
+    "dev_worker": "export NODE_ENV=development && ts-node src/worker.ts",
     "test": "make test",
     "lint": "node_modules/.bin/tslint --project ."
   },
@@ -26,6 +27,7 @@
     "apollo-server": "^2.6.9",
     "bn.js": "^5.0.0",
     "cron": "^1.7.1",
+    "date-fns": "^1.30.1",
     "ethjs-provider-signer": "^0.1.4",
     "ethjs-signer": "^0.1.1",
     "graphql": "^14.4.2",

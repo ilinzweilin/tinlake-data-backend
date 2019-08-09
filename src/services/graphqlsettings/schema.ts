@@ -2,10 +2,10 @@ import gql from 'graphql-tag';
 
 export const typeDefs = gql`
   type Query {
-    last1d: [TinlakeEvent]!
-    last7d: [TinlakeEvent]!
-    last30d: [TinlakeEvent]!
-    last90d: [TinlakeEvent]!
+    last1d(interval: String): [TinlakeEvent]!
+    last7d(interval: String): [TinlakeEvent]!
+    last30d(interval: String): [TinlakeEvent]!
+    last90d(interval: String): [TinlakeEvent]!
   }
 
   type TinlakeEvent {
