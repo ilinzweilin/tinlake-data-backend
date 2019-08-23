@@ -1,12 +1,12 @@
 import Tinlake from 'tinlake';
-import contractAddresses from './addresses_tinlake.json';
 import { sign } from 'ethjs-signer';
 const SignerProvider = require('ethjs-provider-signer');
 import config from './../../config';
-import BN from 'BN.js';
+import BN from 'bn.js';
 
 const NodeCache = require('node-cache');
 const LoanCache = new NodeCache();
+const contractAddresses = config.tinlakeAddresses
 
 export async function getTinlake() {
   return new Tinlake(
@@ -16,6 +16,7 @@ export async function getTinlake() {
       accounts: (cb: (arg0: null, arg1: string[]) => void) => cb(null, [config['EthFromAddress']]),
     }),
     contractAddresses,
+    [],
     {
       ethConfig: { from: config['EthFromAddress'] },
     },
@@ -30,7 +31,7 @@ async function getTotalDebt(tinlake: Tinlake, allLoans) {
     const LoanIDBN = loanID.toString();
     const BalanceDebt = await tinlake.getBalanceDebt(LoanIDBN);
 
-    if (BalanceDebt.debt > 0) {
+    if (BalanceDebt.debt > new BN(0)) {
       const curDept = await tinlake.getCurrentDebt(LoanIDBN);
       debt = debt.add(curDept);
     }

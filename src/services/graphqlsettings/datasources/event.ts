@@ -11,11 +11,10 @@ class EventAPI {
 
   getDateRange(startDate, endDate, interval) {
     const datesList = Array();
-
     if (interval === 'day') {
       const days = differenceInDays(endDate, startDate);
 
-      for (let day = 1; day < days; day += 1) {
+      for (let day = 1; day <= days; day += 1) {
         const newDate = addDays(startDate, day);
         datesList.push(newDate);
       }
@@ -27,7 +26,6 @@ class EventAPI {
 
       for (let hour = 1; hour < hours; hour += 1) {
         const new_date = addHours(startDate, hour);
-
         datesList.push(new_date);
       }
 
@@ -35,17 +33,12 @@ class EventAPI {
 
     if (interval === 'minute') {
       const minutes = differenceInMinutes(endDate, startDate);
-
       for (let minute = 1; minute < minutes; minute += 1) {
         const new_date = addMinutes(startDate, minute);
-
         datesList.push(new_date);
       }
-
     }
-
     return datesList;
-
   }
 
   async createEvent(dateCreated: Date, data:
@@ -66,12 +59,12 @@ class EventAPI {
         ongoing_loans: data['ongoing_loans'],
         repaid_loans: data['repaid_loans'],
       };
-
       this.datastore.insert(doc, (err, newDoc) => {
         if (err) { reject(err); } else { resolve(newDoc); }
       });
     });
   }
+
   async findByPeriod(period: '24h' | '7d' | '30d' | '90d', interval: 'day' | 'hour' | '') {
     return new Promise((resolve, reject) => {
       let days: number;
@@ -86,12 +79,10 @@ class EventAPI {
       }
 
       const todayDate = new Date();
-
       const endDate = todayDate;
       const startDate = new Date();
 
       startDate.setDate(todayDate.getDate() - days);
-
       startDate.setMinutes(0);
       startDate.setMilliseconds(0);
       startDate.setSeconds(0);
@@ -104,18 +95,19 @@ class EventAPI {
       if (interval === 'day' || interval === 'hour') {
 
         const datesList = this.getDateRange(startDate, endDate, interval);
-
         return this.datastore.find(
           { timestamp: { $in: datesList } },
           (err: Error, docs: any) => {
             if (err) { reject(err); } else { resolve(docs); }
           });
       }
+      
       return this.datastore.find(
         { timestamp: { $gte: startDate, $lte: endDate } },
         (err: Error, docs: any) => {
           if (err) { reject(err); } else { resolve(docs); }
         });
+       
     });
   }
 
