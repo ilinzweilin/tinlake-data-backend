@@ -38,7 +38,7 @@
     "nedb": "^1.8.0",
     "next": "^9.0.1",
     "node-cache": "^4.2.1",
-    "tinlake": "git+ssh://git@github.com/centrifuge/tinlake.js.git"
+    "tinlake": "https://github.com/centrifuge/tinlake.js.git"
   },
   "devDependencies": {
     "@types/bn.js": "^4.11.5",

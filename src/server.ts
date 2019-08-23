@@ -7,7 +7,6 @@ import https from 'https';
 import http from 'http';
 import config from './config';
 
-console.log(config)
 const configurations = {
   // Note: You may need sudo to run on port 443
   production: { ssl: true, port: 443 },
