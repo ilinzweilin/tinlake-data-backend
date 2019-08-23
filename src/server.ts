@@ -5,16 +5,15 @@ import resolvers  from './services/graphqlsettings/resolvers';
 import fs from 'fs';
 import https from 'https';
 import http from 'http';
-
 import config from './config';
 
 const configurations = {
   // Note: You may need sudo to run on port 443
-  production: { ssl: true, port: 443, hostname: 'example.com' },
-  development: { ssl: false, port: 4000, hostname: 'localhost' },
+  production: { ssl: true, port: 443 },
+  development: { ssl: false, port: 4000 },
 };
 
-const environment = process.env.NODE_ENV === 'development' ? 'development' : 'production';
+const { environment } = config;
 const env_config = configurations[environment];
 
 const apollo = new ApolloServer({ typeDefs, resolvers });
@@ -43,8 +42,6 @@ apollo.installSubscriptionHandlers(server);
 
 server.listen({ port: env_config.port }, () =>
   console.log(
-    '🚀 Server ready at',
-    `http${env_config.ssl ? 's' : ''}://${env_config.hostname}\
-    :${env_config.port}${apollo.graphqlPath}`,
+    `🚀 Server ready at port :${env_config.port}${apollo.graphqlPath}`  
   ),
 );

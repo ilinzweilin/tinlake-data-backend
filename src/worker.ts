@@ -1,18 +1,18 @@
 import { getTinlakeData } from './services/tinlake';
 import config, { eventAPI } from './config';
 
-function createEvent() {
-  const data = getTinlakeData();
+async function createEvent() {
+  const data = await getTinlakeData();
   const dateCreated = new Date();
   dateCreated.setMilliseconds(0);
   dateCreated.setSeconds(0);
-  data.then(result => eventAPI.createEvent(dateCreated, result));
-  console.log(`${new Date()} New event saved to db`);
+  eventAPI.createEvent(dateCreated, data);
+  console.log(`${new Date()} New event saved to db ${JSON.stringify(data)}`);
 }
 console.log(
    '🚀 Worker ready');
 
 const CronJob = require('cron').CronJob;
-const rule = `*/${config['runEveryMinute']} * * * *`;
+const rule = `*/${config['cronInterval']} * * * *`;
 
 new CronJob(rule, createEvent, null, true, 'UTC');
