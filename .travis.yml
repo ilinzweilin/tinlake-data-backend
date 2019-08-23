@@ -10,8 +10,5 @@ deploy:
   - provider: script
     script: bash ./scripts/docker_push.sh
     on:
-      branch: develop
-  - provider: script
-    script: bash ./scripts/docker_push.sh
-    on:
-      branch: master
+      all_branches: true
+      condition: $TRAVIS_BRANCH =~ ^(develop|master)$
