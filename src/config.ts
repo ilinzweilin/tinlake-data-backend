@@ -13,5 +13,4 @@ export const config = {
   tinlakeAddresses: JSON.parse(process.env.TINLAKE_ADDRESSES),
   environment: process.env.NODE_ENV || 'development'
 };
-
 export default config;
