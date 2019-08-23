@@ -9,7 +9,6 @@
     "start:prod": "export NODE_ENV=production && (npm run worker & npm run server)",
     "start:dev": "export NODE_ENV=development && (npm run worker &  npm run server)",
     "create_test_events": "ts-node src/create_test_events.ts",
-    "test": "make test",
     "lint": "node_modules/.bin/tslint --project ."
   },
   "repository": {
