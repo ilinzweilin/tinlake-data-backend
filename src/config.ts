@@ -2,7 +2,7 @@ import EventAPI  from './services/graphqlsettings/datasources/event';
 import Datastore from 'nedb';
 require('dotenv').config()
 
-const datastore = new Datastore({ filename: '.tinlake_events.db', autoload: true });
+const datastore = new Datastore({ filename: './data/.tinlake_events.db', autoload: true });
 
 export const eventAPI = new EventAPI(datastore);
 
