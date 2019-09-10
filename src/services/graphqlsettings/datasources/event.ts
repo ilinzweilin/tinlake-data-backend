@@ -1,44 +1,11 @@
 import Datastore from 'nedb';
-import { addDays, addHours, addMinutes, differenceInDays,
-  differenceInHours, differenceInMinutes } from 'date-fns';
+import { TinlakeEventEntry } from '../../tinlake';
 
 class EventAPI {
   datastore: Datastore;
 
   constructor(datastore: Datastore) {
     this.datastore = datastore;
-  }
-
-  getDateRange(startDate, endDate, interval) {
-    const datesList = Array();
-    if (interval === 'day') {
-      const days = differenceInDays(endDate, startDate);
-
-      for (let day = 1; day <= days; day += 1) {
-        const newDate = addDays(startDate, day);
-        datesList.push(newDate);
-      }
-
-    }
-
-    if (interval === 'hour') {
-      const hours = differenceInHours(endDate, startDate);
-
-      for (let hour = 1; hour < hours; hour += 1) {
-        const new_date = addHours(startDate, hour);
-        datesList.push(new_date);
-      }
-
-    }
-
-    if (interval === 'minute') {
-      const minutes = differenceInMinutes(endDate, startDate);
-      for (let minute = 1; minute < minutes; minute += 1) {
-        const new_date = addMinutes(startDate, minute);
-        datesList.push(new_date);
-      }
-    }
-    return datesList;
   }
 
   async createEvent(dateCreated: Date, data:
@@ -66,51 +33,70 @@ class EventAPI {
   }
 
   async findByPeriod(period: '24h' | '7d' | '30d' | '90d', interval: 'day' | 'hour' | '') {
-    return new Promise((resolve, reject) => {
-      let days: number;
-      if (period === '24h') {
-        days = 1;
-      } else if (period === '7d') {
-        days = 7;
-      } else if (period === '30d') {
-        days = 30;
-      } else if (period === '90d') {
-        days = 90;
-      }
+    let days: number;
+    let data: TinlakeEventEntry[] = []
 
-      const todayDate = new Date();
-      const endDate = todayDate;
-      const startDate = new Date();
+    if (period === '24h') {
+      days = 1;
+    } else if (period === '7d') {
+      days = 7;
+    } else if (period === '30d') {
+      days = 30;
+    } else if (period === '90d') {
+      days = 90;
+    }
 
-      startDate.setDate(todayDate.getDate() - days);
-      startDate.setMinutes(0);
-      startDate.setMilliseconds(0);
-      startDate.setSeconds(0);
+    const todayDate = new Date();
+    const endDate = todayDate;
+    const startDate = new Date();
 
-      endDate.setHours(endDate.getHours() + 1);
-      endDate.setMinutes(0);
-      endDate.setMilliseconds(0);
-      endDate.setSeconds(0);
+    startDate.setDate(todayDate.getDate() - days);
+    startDate.setMinutes(0);
+    startDate.setMilliseconds(0);
+    startDate.setSeconds(0);
 
-      if (interval === 'day' || interval === 'hour') {
+    endDate.setHours(endDate.getHours() + 1);
+    endDate.setMinutes(0);
+    endDate.setMilliseconds(0);
+    endDate.setSeconds(0);
 
-        const datesList = this.getDateRange(startDate, endDate, interval);
-        return this.datastore.find(
-          { timestamp: { $in: datesList } },
+    let entries: TinlakeEventEntry[] = []
+    try {
+      entries = await new Promise((resolve, reject) =>
+        this.datastore.find({ timestamp: { $gte: startDate, $lte: endDate } },
           (err: Error, docs: any) => {
             if (err) { reject(err); } else { resolve(docs); }
-          });
-      }
-      
-      return this.datastore.find(
-        { timestamp: { $gte: startDate, $lte: endDate } },
-        (err: Error, docs: any) => {
-          if (err) { reject(err); } else { resolve(docs); }
-        });
-       
-    });
+        })
+      )
+    } catch (e) {
+      console.log("Error retrieving data from database", e)
+      throw (e)
+    }
+
+    let entriesMap = {}
+    if (interval === 'day') {
+      entriesMap = entries.reduce((dayMap, currentEntry: TinlakeEventEntry) => {
+        const day = (new Date(currentEntry.timestamp)).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        if (!dayMap[`${day}`]) {
+          dayMap[`${day}`] = []
+        }
+        dayMap[`${day}`].push(currentEntry)
+        return dayMap
+      }, {})
+    }
+
+    for (let key in entriesMap) {
+      const dayEntries = entriesMap[key]
+      entriesMap[key] = sortByTimestamp(dayEntries)
+      const latestEntryInPeriod = entriesMap[key][entriesMap[key].length - 1]
+      data.push(latestEntryInPeriod)
+    }
+    return data && sortByTimestamp(data)
   }
 
+}
+function sortByTimestamp(entries: TinlakeEventEntry[]) {
+  return entries.sort((a: TinlakeEventEntry, b: TinlakeEventEntry) => (new Date(a.timestamp).getTime()) > (new Date(b.timestamp).getTime()) ? 1 : -1)
 }
 
 export default EventAPI;

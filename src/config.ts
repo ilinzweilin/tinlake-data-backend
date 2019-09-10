@@ -9,7 +9,8 @@ export const config = {
   cronInterval: 1,
   tinlakeAddresses: JSON.parse(process.env.TINLAKE_ADDRESSES),
   environment: process.env.NODE_ENV || 'development',
-  dbPath: process.env.DB_PATH || './data/'
+  dbPath: process.env.DB_PATH || './data/',
+  transactionTimeout: parseInt(process.env.TRANSACTION_TIMEOUT, 10)
 };
 
 const dbFileName = path.join(config.dbPath, ".tinlake_events.db");
