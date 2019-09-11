@@ -8,6 +8,18 @@ const NodeCache = require('node-cache');
 const LoanCache = new NodeCache();
 const contractAddresses = config.tinlakeAddresses
 
+export type TinlakeEventEntry = {
+  total_debt: string
+  total_balance: string
+  total_value_of_nfts: string
+  total_supply: string
+  number_of_loans: string
+  whitelisted_loans: string
+  ongoing_loans: string
+  repaid_loans: string
+  timestamp: string
+}
+
 export async function getTinlake() {
   return new Tinlake(
     new SignerProvider(config['rpcUrl'], {
@@ -17,6 +29,7 @@ export async function getTinlake() {
     }),
     contractAddresses,
     [],
+    config.transactionTimeout,
     {
       ethConfig: { from: config['EthFromAddress'] },
     },

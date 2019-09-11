@@ -4,8 +4,8 @@
   "description": "nodejs/typescript application that will query the Ethereum JSON RPC interface on a continuous basis to log time series data to a database and expose this data via a Rest",
   "main": "index.ts",
   "scripts": {
-    "server": "ts-node src/server.ts",
-    "worker": "ts-node src/worker.ts",
+    "server": "export NODE_ENV=development && ts-node src/server.ts",
+    "worker": "export NODE_ENV=development && ts-node src/worker.ts",
     "start:prod": "export NODE_ENV=production && (npm run worker & npm run server)",
     "start:dev": "export NODE_ENV=development && (npm run worker &  npm run server)",
     "create_test_events": "ts-node src/create_test_events.ts",
