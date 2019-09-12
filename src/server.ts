@@ -6,6 +6,7 @@ import fs from 'fs';
 import https from 'https';
 import http from 'http';
 import config from './config';
+import cors from 'cors';
 
 const configurations = {
   // Note: You may need sudo to run on port 443
@@ -19,6 +20,7 @@ const env_config = configurations[environment];
 const apollo = new ApolloServer({ typeDefs, resolvers });
 
 const app = express();
+app.use(cors())
 apollo.applyMiddleware({ app });
 
 // Create the HTTPS or HTTP server, per configuration
