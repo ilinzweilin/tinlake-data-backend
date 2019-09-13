@@ -6,6 +6,17 @@ class EventAPI {
 
   constructor(datastore: Datastore) {
     this.datastore = datastore;
+    this.createIndex()
+  }
+
+  createIndex() {
+    this.datastore.ensureIndex({ fieldName: 'timestamp', unique: true }, function (err) {
+      if (!err) {
+        console.log("index created")
+        return
+      }
+      console.log(`index could not be created ${err}`)
+    })
   }
 
   async createEvent(dateCreated: Date, data:
