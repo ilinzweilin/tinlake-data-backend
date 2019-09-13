@@ -10,7 +10,7 @@ class EventAPI {
   }
 
   createIndex() {
-    this.datastore.ensureIndex({ fieldName: 'timestamp', unique: true }, function (err) {
+    this.datastore.ensureIndex({ fieldName: 'timestamp' }, function (err) {
       if (!err) {
         console.log("index created")
         return
